@@ -68,7 +68,6 @@ describe("Test Message class", function () {
 
 	test("can get", async function () {
 		let u = await Message.get(1);
-		console.log(u);
 		expect(u).toEqual({
 			id: expect.any(Number),
 			body: "u1-to-u2",
