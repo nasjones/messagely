@@ -9,7 +9,9 @@ const router = express.Router();
  **/
 router.get("/", (req, res, next) => {
 	try {
-		return res.json({ users: User.all() });
+		if (req.user) return res.json({ users: User.all() });
+		const err = new ExpressError("Unauthorized", 401);
+		return next(err);
 	} catch (err) {
 		next(err);
 	}
@@ -24,8 +26,10 @@ router.get("/", (req, res, next) => {
 router.get("/:username", (req, res, next) => {
 	try {
 		const { username } = req.params;
-
-		return res.json({ users: User.get(username) });
+		if (req.user.username == username)
+			return res.json({ users: User.get(username) });
+		const err = new ExpressError("Unauthorized", 401);
+		return next(err);
 	} catch (err) {
 		next(err);
 	}
@@ -43,8 +47,10 @@ router.get("/:username", (req, res, next) => {
 router.get("/:username/to", (req, res, next) => {
 	try {
 		const { username } = req.params;
-
-		return res.json({ users: User.messagesTo(username) });
+		if (req.user.username == username)
+			return res.json({ users: User.messagesTo(username) });
+		const err = new ExpressError("Unauthorized", 401);
+		return next(err);
 	} catch (err) {
 		next(err);
 	}
@@ -59,11 +65,13 @@ router.get("/:username/to", (req, res, next) => {
  *                 to_user: {username, first_name, last_name, phone}}, ...]}
  *
  **/
-router.get("/:username/to", (req, res, next) => {
+router.get("/:username/from", (req, res, next) => {
 	try {
 		const { username } = req.params;
-
-		return res.json({ users: User.messagesFrom(username) });
+		if (req.user.username == username)
+			return res.json({ users: User.messagesFrom(username) });
+		const err = new ExpressError("Unauthorized", 401);
+		return next(err);
 	} catch (err) {
 		next(err);
 	}

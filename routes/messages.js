@@ -1,6 +1,7 @@
 const express = require("express");
 const Message = require("../models/message");
 const router = express.Router();
+const ExpressError = require("../expressError");
 
 /** GET /:id - get detail of message.
  *
@@ -17,7 +18,11 @@ const router = express.Router();
 router.get("/:id", (req, res, next) => {
 	try {
 		const { id } = req.params;
-		return res.json({ message: Message.get(id) });
+		let message = Message.get(id);
+		if ([message.from_user, message.to_user].includes(req.user.username))
+			return res.json({ message });
+		const err = new ExpressError("Unauthorized", 401);
+		return next(err);
 	} catch (err) {
 		next(err);
 	}
@@ -33,9 +38,12 @@ router.post("/", (req, res, next) => {
 	try {
 		const { to_username, body } = req.body;
 		const from_username = req.user.username;
-		return res.json({
-			message: Message.create({ from_username, to_username, body }),
-		});
+		if (req.user)
+			return res.json({
+				message: Message.create({ from_username, to_username, body }),
+			});
+		const err = new ExpressError("Unauthorized", 401);
+		return next(err);
 	} catch (err) {
 		next(err);
 	}
@@ -57,7 +65,8 @@ router.post("/:id/read", (req, res, next) => {
 			return res.json({
 				message: Message.markRead(id),
 			});
-		return;
+		const err = new ExpressError("Unauthorized", 401);
+		return next(err);
 	} catch (err) {
 		next(err);
 	}
