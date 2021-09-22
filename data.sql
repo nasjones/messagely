@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS users;
+
 DROP TABLE IF EXISTS messages;
 
 CREATE TABLE users (
@@ -12,10 +13,11 @@ CREATE TABLE users (
 );
 
 CREATE TABLE messages (
-    id SERIAL PRIMARY KEY,
+    id serial PRIMARY KEY,
     from_username text NOT NULL REFERENCES users,
     to_username text NOT NULL REFERENCES users,
     body text NOT NULL,
     sent_at timestamp with time zone NOT NULL,
     read_at timestamp with time zone
 );
+
