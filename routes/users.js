@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/user");
 const router = express.Router();
+const ExpressError = require("../expressError");
 
 /** GET / - get list of users.
  *
